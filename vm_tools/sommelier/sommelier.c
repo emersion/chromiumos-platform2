@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <gbm.h>
 #include <libgen.h>
-#include <linux/virtwl.h>
+//#include <linux/virtwl.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -2486,6 +2486,7 @@ static void sl_send_data(struct sl_context* ctx) {
   ctx->selection_data_ack_pending = 0;
 
   switch (ctx->data_driver) {
+#if 0
     case DATA_DRIVER_VIRTWL: {
       struct virtwl_ioctl_new new_pipe = {
           .type = VIRTWL_IOCTL_NEW_PIPE_READ, .fd = -1, .flags = 0, .size = 0,
@@ -2503,6 +2504,7 @@ static void sl_send_data(struct sl_context* ctx) {
       wl_data_offer_receive(ctx->selection_data_offer->internal,
                             sl_utf8_mime_type, new_pipe.fd);
     } break;
+#endif
     case DATA_DRIVER_NOOP: {
       int p[2];
 
@@ -2970,6 +2972,7 @@ static void sl_client_destroy_notify(struct wl_listener* listener, void* data) {
   exit(0);
 }
 
+#if 0
 static int sl_handle_virtwl_ctx_event(int fd, uint32_t mask, void* data) {
   struct sl_context* ctx = (struct sl_context*)data;
   uint8_t ioctl_buffer[4096];
@@ -3088,6 +3091,7 @@ static int sl_handle_virtwl_socket_event(int fd, uint32_t mask, void* data) {
 
   return 1;
 }
+#endif
 
 // Break |str| into a sequence of zero or more nonempty arguments. No more
 // than |argc| arguments will be added to |argv|. Returns the total number of
@@ -3571,6 +3575,7 @@ int main(int argc, char **argv) {
   if (!virtwl_device)
     virtwl_device = VIRTWL_DEVICE;
 
+#if 0
   if (virtwl_device) {
     struct virtwl_ioctl_new new_ctx = {
         .type = VIRTWL_IOCTL_NEW_CTX, .fd = -1, .flags = 0, .size = 0,
@@ -3614,6 +3619,7 @@ int main(int argc, char **argv) {
                                sl_handle_virtwl_ctx_event, &ctx);
     }
   }
+#endif
 
   if (drm_device) {
     int drm_fd = open(drm_device, O_RDWR | O_CLOEXEC);
@@ -3642,6 +3648,7 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
       }
       ctx.shm_driver = SHM_DRIVER_DMABUF;
+#if 0
     } else if (strcmp(shm_driver, "virtwl") == 0 ||
                strcmp(shm_driver, "virtwl-dmabuf") == 0) {
       if (ctx.virtwl_fd == -1) {
@@ -3673,6 +3680,7 @@ int main(int argc, char **argv) {
           close(new_dmabuf.fd);
         }
       }
+#endif
     }
   } else if (ctx.drm_device) {
     ctx.shm_driver = SHM_DRIVER_DMABUF;

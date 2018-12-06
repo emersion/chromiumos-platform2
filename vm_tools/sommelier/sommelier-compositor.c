@@ -8,7 +8,7 @@
 #include <errno.h>
 #include <gbm.h>
 #include <limits.h>
-#include <linux/virtwl.h>
+//#include <linux/virtwl.h>
 #include <pixman.h>
 #include <stdlib.h>
 #include <string.h>
@@ -57,10 +57,10 @@ struct sl_output_buffer {
 };
 
 struct dma_buf_sync {
-  __u64 flags;
+  uint64_t flags;
 };
 
-static void sl_dmabuf_sync(int fd, __u64 flags) {
+static void sl_dmabuf_sync(int fd, uint64_t flags) {
   struct dma_buf_sync sync = {0};
   int rv;
 
@@ -78,6 +78,7 @@ static void sl_dmabuf_end_write(int fd) {
   sl_dmabuf_sync(fd, DMA_BUF_SYNC_END | DMA_BUF_SYNC_WRITE);
 }
 
+#if 0
 static void sl_virtwl_dmabuf_sync(int fd, __u32 flags) {
   struct virtwl_ioctl_dmabuf_sync sync = {0};
   int rv;
@@ -95,6 +96,7 @@ static void sl_virtwl_dmabuf_begin_write(int fd) {
 static void sl_virtwl_dmabuf_end_write(int fd) {
   sl_virtwl_dmabuf_sync(fd, DMA_BUF_SYNC_END | DMA_BUF_SYNC_WRITE);
 }
+#endif
 
 static uint32_t sl_gbm_format_for_shm_format(uint32_t format) {
   switch (format) {
@@ -247,6 +249,7 @@ static void sl_host_surface_attach(struct wl_client* client,
 
           gbm_bo_destroy(bo);
         } break;
+#if 0
         case SHM_DRIVER_VIRTWL: {
           size_t size = host_buffer->shm_mmap->size;
           struct virtwl_ioctl_new ioctl_new = {.type = VIRTWL_IOCTL_NEW_ALLOC,
@@ -322,6 +325,7 @@ static void sl_host_surface_attach(struct wl_client* client,
               sl_virtwl_dmabuf_begin_write;
           host->current_buffer->mmap->end_write = sl_virtwl_dmabuf_end_write;
         } break;
+#endif
       }
 
       assert(host->current_buffer->internal);
